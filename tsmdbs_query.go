@@ -42,6 +42,8 @@ func (q *tsmdbsQueryMetrics) SelectGVal(ctx context.Context, key string) (interf
     return out.Query, nil
   } else if ! out.isinterval && key == "insert" {
     return out.Insert, nil
+  } else if ! out.isinterval && key == "metric" {
+    return out.Insert, nil
   }
 
   if out.host == 0 {
@@ -85,10 +87,14 @@ func (q *tsmdbsQueryMetrics) Query() (interface{}, error) {
 }
 
 func (q *tsmdbsQueryMetrics) Insert(value interface{}) (interface{}, error) {
-  return Insert(q, value)
+  return Insert_Metric(q, value)
 }
 
-func Insert(q *tsmdbsQueryMetrics, value interface{}) (interface{}, error) {
+func Insert_Metric(q *tsmdbsQueryMetrics, value interface{}) (interface{}, error) {
+  return Insert(q, "metric", value)
+}
+
+func Insert(q *tsmdbsQueryMetrics, mtype string, value interface{}) (interface{}, error) {
   if ! q.isinterval {
     q.tsstart = time.Now()
     q.tsend      = time.Now()
@@ -97,7 +103,7 @@ func Insert(q *tsmdbsQueryMetrics, value interface{}) (interface{}, error) {
   if q.host == 0 || q.key == 0 {
     return nil, errors.New("Context for insert not present")
   }
-  out, err := q.ts.Store(nil, q.tsstart, q._host, q._key, value, []string{}, map[string]interface{}{})
+  out, err := q.ts.Store(mtype, q.tsstart, q._host, q._key, value, []string{}, map[string]interface{}{})
   if err != nil {
     return nil, err
   }
