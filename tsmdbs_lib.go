@@ -25,6 +25,7 @@ func mean(src []float64) float64 {
 func (ts *TSMDBS) ts_lib_config() error {
   ts.qctx["now"] = time.Now
   ts.qctx["query"] = Query
+  ts.qctx["insert"] = Insert
   ts.qctx["start"] = Start
   ts.qctx["end"] = End
   ts.qctx["float"] = to_float

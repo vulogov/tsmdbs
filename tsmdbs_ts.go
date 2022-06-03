@@ -47,6 +47,18 @@ func (ts *TSMDBS) Time(stamp time.Time) (int64, error) {
 }
 
 func (ts *TSMDBS) Range(start time.Time, end time.Time) ([]int64, error) {
+  var id int64
   out := make([]int64, 0)
+  ts1 := now.With(start).BeginningOfMinute().UnixNano() / int64(time.Millisecond)
+  ts2 := now.With(end).EndOfMinute().UnixNano() / int64(time.Millisecond)
+  rows, err := ts.db.Query("SELECT ID FROM TS WHERE START>=? AND END<=?", ts1, ts2)
+  if err != nil {
+    return nil, err
+  }
+  for rows.Next() {
+    err = rows.Scan(&id)
+    out = append(out, id)
+  }
+  rows.Close()
   return out, nil
 }
