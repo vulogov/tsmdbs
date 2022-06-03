@@ -227,3 +227,17 @@ func TestQNSMDBS17(t *testing.T) {
   assert.Equal(t, out, float64(42))
   db.Close()
 }
+
+func TestQNSMDBS18(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.app1.insert(42)`)
+  db.Query(`db.testhost.testkey.app1.insert(41)`)
+  db.Query(`db.testhost.testkey.app2.insert(40)`)
+  db.Query(`db.testhost.testkey.app2.insert(30)`)
+  db.Query(`db.testhost.testkey.app1.insert(42)`)
+  res, err := db.Query(`labels.app1.app2.sample()`)
+  assert.Equal(t, err, nil)
+  assert.Equal(t, len(res.([]float64)), 5)
+  db.Close()
+}

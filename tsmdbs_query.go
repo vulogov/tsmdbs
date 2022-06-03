@@ -1,6 +1,7 @@
 package tsmdbs
 
 import (
+  "fmt"
   "time"
   "context"
   "errors"
@@ -19,6 +20,84 @@ type tsmdbsQueryMetrics struct {
   isinterval bool
   tsstart time.Time
   tsend   time.Time
+  rel     []string
+}
+
+type tsmdbsLabelMetrics struct {
+  started bool
+  ts      *TSMDBS
+  rel     []string
+}
+
+func (q *tsmdbsLabelMetrics) SelectGVal(ctx context.Context, key string) (interface{}, error) {
+  var out *tsmdbsLabelMetrics
+
+  if q.started {
+    out = q
+  } else {
+    out = new(tsmdbsLabelMetrics)
+    out.ts = q.ts
+    out.started = true
+  }
+
+  if out.started && key == "query" {
+    return out.Query, nil
+  } else if out.started && key == "sample" {
+    return out.Sample, nil
+  }
+
+  out.rel = append(out.rel, key)
+  return out, nil
+}
+
+func (q *tsmdbsLabelMetrics) Sample() ([]float64, error) {
+  res, err := q.Query()
+  if err != nil {
+    return nil, err
+  }
+  return to_float(res.([]interface{})), nil
+}
+
+func (q *tsmdbsLabelMetrics) Query() (interface{}, error) {
+  var data []byte
+
+  if len(q.rel) == 0 {
+    return nil, errors.New("relation context not set")
+  }
+  _query := "select distinct value from data,drel,relation where data.id = drel.data and drel.rel = relation.id and relation.name in %v"
+  labels := ""
+  is_started := false
+  for _, v := range q.rel {
+    if ! is_started {
+      labels += fmt.Sprintf("( '%v' ", v)
+      is_started = true
+    } else {
+      labels += fmt.Sprintf(", '%v' ", v)
+    }
+  }
+  labels += " )"
+  query := fmt.Sprintf(_query, labels)
+  out := make([]interface{}, 0)
+  rows, err := q.ts.db.Query(query)
+  if err != nil {
+    return nil, err
+  }
+  for rows.Next() {
+    err = rows.Scan(&data)
+    if err != nil {
+      return nil, err
+    }
+    jdata, err := gabs.ParseJSON(data)
+    if err != nil {
+      return nil, err
+    }
+    v := jdata.Search("value").Data()
+    if v != nil {
+      out = append(out, v)
+    }
+  }
+  rows.Close()
+  return out, nil
 }
 
 func (q *tsmdbsQueryMetrics) SelectGVal(ctx context.Context, key string) (interface{}, error) {
@@ -54,6 +133,8 @@ func (q *tsmdbsQueryMetrics) SelectGVal(ctx context.Context, key string) (interf
   } else if out.key == 0 {
     out.key, err = q.ts.Key(key)
     out._key = key
+  } else {
+    out.rel = append(out.rel, key)
   }
 
   if err != nil {
@@ -117,7 +198,7 @@ func Insert(q *tsmdbsQueryMetrics, mtype string, value interface{}) (interface{}
   if q.host == 0 || q.key == 0 {
     return nil, errors.New("Context for insert not present")
   }
-  out, err := q.ts.Store(mtype, q.tsstart, q._host, q._key, value, []string{}, map[string]interface{}{})
+  out, err := q.ts.Store(mtype, q.tsstart, q._host, q._key, value, q.rel, map[string]interface{}{})
   if err != nil {
     return nil, err
   }
@@ -198,6 +279,7 @@ func (ts *TSMDBS) Query(query string) (interface{}, error) {
 
   lang := gval.Full()
   ts.qctx["db"] = &tsmdbsQueryMetrics{ts: ts, started: false, host: 0, key: 0}
+  ts.qctx["labels"] = &tsmdbsLabelMetrics{ts: ts, started: false}
 	value, err := lang.Evaluate(
     query,
     ts.qctx,

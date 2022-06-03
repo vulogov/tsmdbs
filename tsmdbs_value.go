@@ -32,8 +32,15 @@ func (ts *TSMDBS) Store(mtype interface{}, date interface{}, host string, key st
   data.Set(key, "key")
   data.Set(value, "value")
   data.Array("relation")
-  for k, v := range attr {
-    data.Set(v, "attributes", k)
+  if rel != nil {
+    for _, r := range rel {
+      data.ArrayAppend(r, "relation")
+    }
+  }
+  if attr != nil {
+    for k, v := range attr {
+      data.Set(v, "attributes", k)
+    }
   }
   return ts.Value(data)
 }

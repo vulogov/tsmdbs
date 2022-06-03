@@ -18,10 +18,12 @@ func TestTSNSMDBS1(t *testing.T) {
 }
 
 func TestTSNSMDBS2(t *testing.T) {
-  db, err := TS(DBNAME_ON_DISK)
-  start, _ := now.Parse("01/31/2022")
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  start, err := now.Parse("01/31/2022 00:00:00")
   assert.Equal(t, err, nil)
   res, err := db.Now()
+  assert.Equal(t, err, nil)
   res, err = db.Time(start)
   assert.Equal(t, err, nil)
   fmt.Println("TS index", res)
