@@ -11,6 +11,10 @@ type TSMDBS struct {
   qctx      map[string]interface{}
 }
 
+func InMemory() (*TSMDBS, error) {
+  return TS(":memory:")
+}
+
 func TS(name string) (*TSMDBS, error) {
   var err error
 

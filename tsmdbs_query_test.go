@@ -93,3 +93,137 @@ func TestQNSMDBS8(t *testing.T) {
   assert.Equal(t, len(out.([]float64)), 1)
   db.Close()
 }
+
+func TestQNSMDBS9(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`db.testhost.testkey.sample()`)
+  assert.Equal(t, err, nil)
+  assert.Equal(t, len(out.([]float64)), 5)
+  db.Close()
+}
+
+func TestQNSMDBS10(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`stddev(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("stddev=",out)
+  assert.Equal(t, out, 5.0990195135927845)
+  db.Close()
+}
+
+func TestQNSMDBS11(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`stderr(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("stderr=",out)
+  assert.Equal(t, out, 2.2803508501982757)
+  db.Close()
+}
+
+func TestQNSMDBS12(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`variance(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("variance=",out)
+  assert.Equal(t, out, float64(26))
+  db.Close()
+}
+
+func TestQNSMDBS13(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`skew(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("skew=",out)
+  assert.Equal(t, out, -2.0931625961863882)
+  db.Close()
+}
+
+func TestQNSMDBS14(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`mode(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("mode=", out)
+  assert.Equal(t, out, float64(42))
+  db.Close()
+}
+
+func TestQNSMDBS15(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`harmonicmean(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("harmonicmean=", out)
+  assert.Equal(t, out, 38.36043662285587)
+  db.Close()
+}
+
+func TestQNSMDBS16(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`geometricmean(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("geometricmean=", out)
+  assert.Equal(t, out, 38.698375708929646)
+  db.Close()
+}
+
+func TestQNSMDBS17(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  db.Query(`db.testhost.testkey.insert(41)`)
+  db.Query(`db.testhost.testkey.insert(40)`)
+  db.Query(`db.testhost.testkey.insert(30)`)
+  db.Query(`db.testhost.testkey.insert(42)`)
+  out, err := db.Query(`mode(db.testhost.testkey.sample())`)
+  assert.Equal(t, err, nil)
+  fmt.Println("mode=", out)
+  assert.Equal(t, out, float64(42))
+  db.Close()
+}

@@ -44,6 +44,8 @@ func (q *tsmdbsQueryMetrics) SelectGVal(ctx context.Context, key string) (interf
     return out.Insert, nil
   } else if ! out.isinterval && key == "metric" {
     return out.Insert, nil
+  } else if ! out.isinterval && key == "sample" {
+    return out.Sample, nil
   }
 
   if out.host == 0 {
@@ -84,6 +86,18 @@ func (q *tsmdbsQueryMetrics) Query() (interface{}, error) {
     return nil, err
   }
   return Query(q)
+}
+
+func (q *tsmdbsQueryMetrics) Sample() (interface{}, error) {
+  q, err := q.All()
+  if err != nil {
+    return nil, err
+  }
+  res, err := Query(q)
+  if err != nil {
+    return nil, err
+  }
+  return to_float(res), nil
 }
 
 func (q *tsmdbsQueryMetrics) Insert(value interface{}) (interface{}, error) {
