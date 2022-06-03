@@ -1,3 +1,6 @@
+
+[![Go](https://github.com/vulogov/tsmdbs/actions/workflows/go.yml/badge.svg)](https://github.com/vulogov/tsmdbs/actions/workflows/go.yml)
+
 # TSMDBS, just another time-series database.
 
 TSMDBS is a embeddable time-series database module designed for storage and analysis of telemetry data. TSMDBS is a package for Golang and the database intended to be embedded in Golang application. There is no server or external app that provides access to TSMDBS functionality.
