@@ -6,6 +6,7 @@ pre:
 	go get github.com/stretchr/testify/assert
 	go get github.com/jinzhu/now
 	go get github.com/PaesslerAG/gval
+	go get gonum.org/v1/gonum/...
 c:
 	go build  -v ./...
 test:

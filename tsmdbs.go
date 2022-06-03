@@ -22,6 +22,7 @@ func TS(name string) (*TSMDBS, error) {
   res.name    = name
   res.qctx    = make(map[string]interface{})
   err = res.Recreate()
+  res.ts_lib_config()
   return res, err
 }
 

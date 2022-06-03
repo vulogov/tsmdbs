@@ -51,8 +51,21 @@ func TestQNSMDBS5(t *testing.T) {
   res, err := db.Store(nil, time.Now(), "testhost", "testkey", 42, []string{"abc", "cde"}, map[string]interface{}{"Hello":"world"})
   assert.Equal(t, err, nil)
   fmt.Println("D=", res)
-  out, err := db.Query(`query(db.testhost.testkey)`)
+  out, err := db.Query(`float(query(db.testhost.testkey))`)
   assert.Equal(t, err, nil)
-  fmt.Println(out)
+  assert.Equal(t, len(out.([]float64)), 1)
+  db.Close()
+}
+
+func TestQNSMDBS6(t *testing.T) {
+  db, err := TS(DBNAME)
+  assert.Equal(t, err, nil)
+  res, err := db.Store(nil, time.Now(), "testhost", "testkey", 42, []string{"abc", "cde"}, map[string]interface{}{"Hello":"world"})
+  res, err = db.Store(nil, time.Now(), "testhost", "testkey", 21, []string{"abc", "cde"}, map[string]interface{}{"Hello":"world"})
+  assert.Equal(t, err, nil)
+  fmt.Println("D=", res)
+  out, err := db.Query(`mean(float(query(db.testhost.testkey)))`)
+  assert.Equal(t, err, nil)
+  assert.Equal(t, out, 31.5)
   db.Close()
 }

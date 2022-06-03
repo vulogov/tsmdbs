@@ -43,7 +43,7 @@ func (q *tsmdbsQueryMetrics) SelectGVal(ctx context.Context, key string) (interf
   return out, nil
 }
 
-func Query(q *tsmdbsQueryMetrics) (interface{}, error) {
+func Query(q *tsmdbsQueryMetrics) ([]interface{}, error) {
   var data []byte
 
   if q.host == 0 || q.key == 0 || ! q.started {
@@ -91,10 +91,6 @@ func (ts *TSMDBS) Query(query string) (interface{}, error) {
 
   lang := gval.Full()
   ts.qctx["db"] = &tsmdbsQueryMetrics{ts: ts, started: false, host: 0, key: 0}
-  ts.qctx["now"] = time.Now
-  ts.qctx["query"] = Query
-  ts.qctx["start"] = Start
-  ts.qctx["end"] = End
 	value, err := lang.Evaluate(
     query,
     ts.qctx,

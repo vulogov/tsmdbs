@@ -45,3 +45,8 @@ func (ts *TSMDBS) Time(stamp time.Time) (int64, error) {
   }
   return ts.Time(stamp)
 }
+
+func (ts *TSMDBS) Range(start time.Time, end time.Time) ([]int64, error) {
+  out := make([]int64, 0)
+  return out, nil
+}
