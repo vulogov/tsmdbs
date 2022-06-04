@@ -1,5 +1,6 @@
 
 [![Go](https://github.com/vulogov/tsmdbs/actions/workflows/go.yml/badge.svg)](https://github.com/vulogov/tsmdbs/actions/workflows/go.yml)
+[![codecov](https://codecov.io/gh/vulogov/tsmdbs/branch/main/graph/badge.svg?token=KGM8LR6KIQ)](https://codecov.io/gh/vulogov/tsmdbs)
 
 # TSMDBS, just another time-series database.
 
