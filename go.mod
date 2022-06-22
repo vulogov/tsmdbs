@@ -1,4 +1,4 @@
-module tsmdbs
+module github.com/vulogov/tsmdbs
 
 go 1.18
 
